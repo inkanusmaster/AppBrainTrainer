@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -15,12 +14,13 @@ import java.util.TreeSet;
 public class MainActivity extends AppCompatActivity {
 
     long time;
-    int additionResult;
+    double result;
+    int additionResult, goodAnswers, totalAnswers;
     GridLayout answerGridLayout;
     Button startButton, playAgainButton, button1, button2, button3, button4;
     TextView timerTextView, mathTextView, pointsTextView, answerTextView;
 
-    public void createGlobalVars(){
+    public void createGlobalVars() {
         timerTextView = findViewById(R.id.timerTextView);
         mathTextView = findViewById(R.id.mathTextView);
         pointsTextView = findViewById(R.id.pointsTextView);
@@ -34,20 +34,34 @@ public class MainActivity extends AppCompatActivity {
         button4 = findViewById(R.id.button4);
     }
 
-    public void declareStartGameVars(){
+    @SuppressLint("SetTextI18n")
+    public void declareStartGameVars() {
+        goodAnswers = 0;
+        totalAnswers = 0;
+        result = 0;
         time = 30;
         timerTextView.setVisibility(View.VISIBLE);
         mathTextView.setVisibility(View.VISIBLE);
         pointsTextView.setVisibility(View.VISIBLE);
+        pointsTextView.setText(goodAnswers + "/" + totalAnswers);
         answerGridLayout.setVisibility(View.VISIBLE);
         startButton.setVisibility(View.INVISIBLE);
         playAgainButton.setVisibility(View.INVISIBLE);
         answerTextView.setVisibility(View.INVISIBLE);
+        button1.setClickable(true);
+        button2.setClickable(true);
+        button3.setClickable(true);
+        button4.setClickable(true);
     }
 
-    @SuppressLint("SetTextI18n")
-    public void declareEndGameVars(){
-        answerTextView.setText("Game finished!");
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
+    public void declareEndGameVars() {
+        if (totalAnswers==0){
+            answerTextView.setText("Game finished!\nResult: 0%");
+        } else {
+            result = (float) goodAnswers / totalAnswers;
+            answerTextView.setText("Game finished!\nResult: " + String.format("%,.2f", result * 100) + "%");
+        }
         answerTextView.setVisibility(View.VISIBLE);
         playAgainButton.setVisibility(View.VISIBLE);
         button1.setClickable(false);
@@ -56,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
         button4.setClickable(false);
     }
 
-    public void countDownTimer(){
-        new CountDownTimer(time * 1000, 1000){
+    public void countDownTimer() {
+        new CountDownTimer(time * 1000, 1000) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long milisecondsTillEnd) {
                 time = milisecondsTillEnd / 1000;
-                timerTextView.setText(time +"s");
+                timerTextView.setText(time + "s");
             }
 
             @SuppressLint("SetTextI18n")
@@ -74,28 +88,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    public void randomNumbers(){
-        int x = (int)((Math.random()*(30)) + 1);
-        int y = (int)((Math.random()*(30)) + 1);
-        mathTextView.setText(x+" + "+y);
-        additionResult = x+y;
-        Log.i("Result",String.valueOf(additionResult));
+    public void randomNumbers() {
+        int x = (int) ((Math.random() * (30)) + 1);
+        int y = (int) ((Math.random() * (30)) + 1);
+        mathTextView.setText(x + " + " + y);
+        additionResult = x + y;
 
         TreeSet<Integer> answers = new TreeSet<>();
         answers.clear();
         answers.add(additionResult);
-        while (answers.size()<4) {
-            answers.add((int)((Math.random()*(60)) + 1));
+        while (answers.size() < 4) {
+            answers.add((int) ((Math.random() * (60)) + 1));
         }
-        Log.i("Answer list",String.valueOf(answers));
 
-        for (int i=0; i< answerGridLayout.getChildCount(); i++){
+        for (int i = 0; i < answerGridLayout.getChildCount(); i++) {
             Button button = (Button) answerGridLayout.getChildAt(i);
             button.setText(String.valueOf(answers.pollFirst()));
+            if (button.getText() == String.valueOf(additionResult)) {
+                button.setTag("good");
+            } else button.setTag("bad");
         }
     }
 
-    public void startGame(View view){
+    @SuppressLint("SetTextI18n")
+    public void checkAnswer(View view) {
+        if (view.getTag().equals("good")) {
+            goodAnswers++;
+            answerTextView.setText("Good answer :)");
+        } else {
+            answerTextView.setText("Bad answer :(");
+        }
+        answerTextView.setVisibility(View.VISIBLE);
+        totalAnswers++;
+        pointsTextView.setText(goodAnswers + "/" + totalAnswers);
+        randomNumbers();
+    }
+
+    public void startGame(View view) {
         declareStartGameVars();
         countDownTimer();
         randomNumbers();
