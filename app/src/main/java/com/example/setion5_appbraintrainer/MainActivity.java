@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     int additionResult, goodAnswers, totalAnswers;
     GridLayout answerGridLayout;
     Button startButton, playAgainButton, restartButton, button1, button2, button3, button4;
-    TextView timerTextView, mathTextView, pointsTextView, answerTextView;
+    TextView timerTextView, mathTextView, pointsTextView, answerTextView, rulesTextView;
     CountDownTimer timer;
 
     public void createGlobalVars() {
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         playAgainButton = findViewById(R.id.playAgainButton);
         restartButton = findViewById(R.id.restartButton);
         answerTextView = findViewById(R.id.answerTextView);
+        rulesTextView = findViewById(R.id.rulesTextView);
         button1 = findViewById(R.id.button1);
         button2 = findViewById(R.id.button2);
         button3 = findViewById(R.id.button3);
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         playAgainButton.setVisibility(View.INVISIBLE);
         restartButton.setVisibility(View.VISIBLE);
         answerTextView.setVisibility(View.INVISIBLE);
+        rulesTextView.setVisibility(View.INVISIBLE);
         button1.setClickable(true);
         button2.setClickable(true);
         button3.setClickable(true);
