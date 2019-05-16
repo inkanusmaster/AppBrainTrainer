@@ -13,12 +13,14 @@ import java.util.TreeSet;
 
 public class MainActivity extends AppCompatActivity {
 
+    boolean firstGame = true;
     long time;
     double result;
     int additionResult, goodAnswers, totalAnswers;
     GridLayout answerGridLayout;
-    Button startButton, playAgainButton, button1, button2, button3, button4;
+    Button startButton, playAgainButton, restartButton, button1, button2, button3, button4;
     TextView timerTextView, mathTextView, pointsTextView, answerTextView;
+    CountDownTimer timer;
 
     public void createGlobalVars() {
         timerTextView = findViewById(R.id.timerTextView);
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         answerGridLayout = findViewById(R.id.answersGridLayout);
         startButton = findViewById(R.id.startButton);
         playAgainButton = findViewById(R.id.playAgainButton);
+        restartButton = findViewById(R.id.restartButton);
         answerTextView = findViewById(R.id.answerTextView);
         button1 = findViewById(R.id.button1);
         button2 = findViewById(R.id.button2);
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         answerGridLayout.setVisibility(View.VISIBLE);
         startButton.setVisibility(View.INVISIBLE);
         playAgainButton.setVisibility(View.INVISIBLE);
+        restartButton.setVisibility(View.VISIBLE);
         answerTextView.setVisibility(View.INVISIBLE);
         button1.setClickable(true);
         button2.setClickable(true);
@@ -56,12 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public void declareEndGameVars() {
-        if (totalAnswers==0){
+        if (totalAnswers == 0) {
             answerTextView.setText("Game finished!\nResult: 0%");
         } else {
             result = (float) goodAnswers / totalAnswers;
             answerTextView.setText("Game finished!\nResult: " + String.format("%,.2f", result * 100) + "%");
         }
+        restartButton.setVisibility(View.INVISIBLE);
         answerTextView.setVisibility(View.VISIBLE);
         playAgainButton.setVisibility(View.VISIBLE);
         button1.setClickable(false);
@@ -71,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void countDownTimer() {
-        new CountDownTimer(time * 1000, 1000) {
+        timer = new CountDownTimer(time * 1000, 1000) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long milisecondsTillEnd) {
@@ -84,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 declareEndGameVars();
             }
-        }.start();
+        };
+        timer.start();
     }
 
     @SuppressLint("SetTextI18n")
@@ -93,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
         int y = (int) ((Math.random() * (30)) + 1);
         mathTextView.setText(x + " + " + y);
         additionResult = x + y;
-
         TreeSet<Integer> answers = new TreeSet<>();
         answers.clear();
         answers.add(additionResult);
@@ -124,7 +129,15 @@ public class MainActivity extends AppCompatActivity {
         randomNumbers();
     }
 
+    public void closeApp(View view) {
+        finish();
+    }
+
     public void startGame(View view) {
+        if(!firstGame){
+            timer.cancel();
+        }
+        firstGame = false;
         declareStartGameVars();
         countDownTimer();
         randomNumbers();
