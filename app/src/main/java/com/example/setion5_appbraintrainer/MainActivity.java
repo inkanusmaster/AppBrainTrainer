@@ -4,14 +4,18 @@ import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
+import java.util.TreeSet;
+
 public class MainActivity extends AppCompatActivity {
 
     long time;
+    int additionResult;
     GridLayout answerGridLayout;
     Button startButton, playAgainButton, button1, button2, button3, button4;
     TextView timerTextView, mathTextView, pointsTextView, answerTextView;
@@ -69,13 +73,32 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    public void randomQuestionNumbers(){
+    @SuppressLint("SetTextI18n")
+    public void randomNumbers(){
+        int x = (int)((Math.random()*(30)) + 1);
+        int y = (int)((Math.random()*(30)) + 1);
+        mathTextView.setText(x+" + "+y);
+        additionResult = x+y;
+        Log.i("Result",String.valueOf(additionResult));
 
+        TreeSet<Integer> answers = new TreeSet<>();
+        answers.clear();
+        answers.add(additionResult);
+        while (answers.size()<4) {
+            answers.add((int)((Math.random()*(60)) + 1));
+        }
+        Log.i("Answer list",String.valueOf(answers));
+
+        for (int i=0; i< answerGridLayout.getChildCount(); i++){
+            Button button = (Button) answerGridLayout.getChildAt(i);
+            button.setText(String.valueOf(answers.pollFirst()));
+        }
     }
 
     public void startGame(View view){
         declareStartGameVars();
         countDownTimer();
+        randomNumbers();
     }
 
     @Override
